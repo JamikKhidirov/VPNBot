@@ -1,0 +1,11 @@
+.env
+vpnbot.db
+vpnbot_backup_*.db
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.idea/
+*.egg-info/
+dist/
+build/

@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  bot:
+    build: .
+    container_name: vpnbot
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./.env:/app/.env
+      - ./vpnbot.db:/app/vpnbot.db
+    networks:
+      - vpnbot-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: vpnbot-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vpnbot
+      POSTGRES_PASSWORD: vpnbot
+      POSTGRES_DB: vpnbot
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vpnbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vpnbot-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: vpnbot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - vpnbot-network
+
+volumes:
+  pgdata:
+
+networks:
+  vpnbot-network:
+    driver: bridge
