@@ -1,4 +1,5 @@
 .env
+servers.json
 vpnbot.db
 vpnbot_backup_*.db
 __pycache__/

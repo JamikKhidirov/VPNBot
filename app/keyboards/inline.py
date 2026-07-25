@@ -95,6 +95,7 @@ def admin_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="👥 Пользователи", callback_data="admin_users")
     builder.button(text="🟢 Онлайн", callback_data="admin_online")
     builder.button(text="📊 Нагрузка", callback_data="admin_server_load")
+    builder.button(text="🌐 VPS сервера", callback_data="admin_vps_list")
     builder.button(text="➕ Добавить сервер", callback_data="admin_add_server")
     builder.button(text="📋 Список серверов", callback_data="admin_servers")
     builder.button(text="📥 Импорт с 3x-ui", callback_data="admin_import_inbounds")

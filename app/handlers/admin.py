@@ -46,6 +46,10 @@ class AdminStates(StatesGroup):
     import_host = State()
     give_plan = State()
     give_duration = State()
+    vps_add_ip = State()
+    vps_add_password = State()
+    vps_add_location = State()
+    vps_add_name = State()
 
 
 # --- Admin check ---
@@ -1375,4 +1379,176 @@ async def callback_admin_server_load(callback: CallbackQuery):
             text += f"🔴 <b>{srv.name}</b> — нет ответа от 3x-ui API\n\n"
 
     await callback.message.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
+# ─── VPS Management ─────────────────────────────────────
+
+@router.callback_query(F.data == "admin_vps_list")
+async def callback_admin_vps_list(callback: CallbackQuery):
+    if not await ensure_admin(callback):
+        return
+    from app.services.vps_deploy import load_vps_servers
+
+    servers = load_vps_servers()
+    text = "🌐 <b>Мои VPS сервера:</b>\n\n"
+    if not servers:
+        text += "Нет добавленных серверов.\n\n"
+        text += "Нажми «➕ Добавить VPS» чтобы добавить. "
+        text += "Порт SSH по умолчанию: 22."
+    else:
+        for i, s in enumerate(servers, 1):
+            text += f"{i}. <b>{s.get('name', 'VPS')}</b>\n"
+            text += f"   📍 {s.get('location', '?')}\n"
+            text += f"   🌐 <code>{s['ip']}</code>\n"
+            text += f"   🔑 Пароль: <code>{s.get('password', '')[:4]}...{s.get('password', '')[-4:]}</code>\n"
+            text += f"   🔌 Порт SSH: {s.get('port', 22)}\n"
+            text += f"   🚀 /deploy_vps {s['ip']} — установить 3x-ui\n\n"
+
+    from aiogram.types import InlineKeyboardButton
+    from aiogram.utils.keyboard import InlineKeyboardBuilder
+    builder = InlineKeyboardBuilder()
+    builder.button(text="➕ Добавить VPS", callback_data="admin_vps_add")
+    builder.button(text="🔄 Проверить все", callback_data="admin_vps_check")
+    builder.button(text="◀ Назад", callback_data="admin")
+    builder.adjust(1)
+
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=builder.as_markup())
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin_vps_add")
+async def callback_admin_vps_add(callback: CallbackQuery, state: FSMContext):
+    if not await ensure_admin(callback):
+        return
+    await state.set_state(AdminStates.vps_add_ip)
+    await callback.message.edit_text(
+        "🌐 <b>Добавление VPS сервера</b>\n\n"
+        "Введи <b>IP адрес</b> сервера:",
+        parse_mode="HTML",
+    )
+    await callback.answer()
+
+
+@router.message(AdminStates.vps_add_ip)
+async def admin_vps_add_ip(message: Message, state: FSMContext):
+    ip = message.text.strip()
+    await state.update_data(ip=ip)
+    await state.set_state(AdminStates.vps_add_password)
+    await message.answer("Введи <b>root пароль</b> сервера:", parse_mode="HTML")
+
+
+@router.message(AdminStates.vps_add_password)
+async def admin_vps_add_password(message: Message, state: FSMContext):
+    await state.update_data(password=message.text.strip())
+    await state.set_state(AdminStates.vps_add_location)
+    await message.answer("Введи <b>локацию</b> (например: Netherlands, Germany):", parse_mode="HTML")
+
+
+@router.message(AdminStates.vps_add_location)
+async def admin_vps_add_location(message: Message, state: FSMContext):
+    await state.update_data(location=message.text.strip())
+    await state.set_state(AdminStates.vps_add_name)
+    await message.answer("Введи <b>название</b> сервера (например: Amsterdam NL-1):", parse_mode="HTML")
+
+
+@router.message(AdminStates.vps_add_name)
+async def admin_vps_add_name(message: Message, state: FSMContext):
+    from app.services.vps_deploy import load_vps_servers, save_vps_servers
+
+    data = await state.get_data()
+    servers = load_vps_servers()
+    servers.append({
+        "ip": data["ip"],
+        "password": data["password"],
+        "location": data["location"],
+        "name": message.text.strip(),
+        "port": 22,
+    })
+    save_vps_servers(servers)
+    await state.clear()
+    await message.answer(
+        f"✅ <b>VPS сервер добавлен!</b>\n\n"
+        f"🌐 IP: <code>{data['ip']}</code>\n"
+        f"📍 Локация: {data['location']}\n"
+        f"📛 Название: {message.text.strip()}\n"
+        f"🔌 Порт SSH: 22\n\n"
+        f"Теперь можешь установить 3x-ui:\n"
+        f"/deploy_vps {data['ip']}",
+        parse_mode="HTML",
+        reply_markup=admin_keyboard(),
+    )
+
+
+@router.message(Command("deploy_vps"))
+async def cmd_deploy_vps(message: Message):
+    if not await ensure_admin(message):
+        return
+    args = message.text.split(maxsplit=1)
+    if len(args) < 2:
+        await message.answer("Использование: /deploy_vps [IP]")
+        return
+
+    from app.services.vps_deploy import load_vps_servers, install_3xui_on_server
+
+    ip = args[1].strip()
+    servers = load_vps_servers()
+    target = next((s for s in servers if s["ip"] == ip), None)
+    if not target:
+        await message.answer(f"❌ VPS с IP {ip} не найден в servers.json.\n"
+                             f"Сначала добавь через админку: /admin → «VPS сервера» → «Добавить VPS»")
+        return
+
+    msg = await message.answer(f"🔄 Устанавливаю 3x-ui на {ip}...\n⏳ Это может занять 2-3 минуты.")
+
+    result = await install_3xui_on_server(ip, target["password"], target.get("port", 22))
+
+    if result["success"]:
+        text = (
+            f"✅ <b>3x-ui установлена на {ip}!</b>\n\n"
+            f"🌐 Панель: <code>http://{ip}:2055</code>\n"
+            f"🔐 Логин: admin | Пароль: admin\n\n"
+            f"⚠️ <b>Сразу смени пароль в панели!</b>\n\n"
+            f"Теперь импортируй сервер в бота:\n"
+            f"/admin → «Импорт с 3x-ui» → введи {ip}"
+        )
+    else:
+        text = (
+            f"❌ <b>Ошибка установки на {ip}</b>\n\n"
+            f"{result.get('error', 'Неизвестная ошибка')}\n\n"
+            f"Проверь:\n"
+            f"• IP доступен?\n"
+            f"• Пароль правильный?\n"
+            f"• Ubuntu 22.04/24.04?\n"
+            f"• Порт SSH: 22?"
+        )
+
+    await msg.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
+@router.callback_query(F.data == "admin_vps_check")
+async def callback_admin_vps_check(callback: CallbackQuery):
+    if not await ensure_admin(callback):
+        return
+    from app.services.vps_deploy import load_vps_servers, check_server_ssh
+
+    servers = load_vps_servers()
+    if not servers:
+        await callback.message.edit_text("❌ Нет VPS серверов.", reply_markup=admin_keyboard())
+        await callback.answer()
+        return
+
+    await callback.message.edit_text("🔄 Проверяю доступность VPS серверов...")
+    text = "🔍 <b>Статус VPS серверов:</b>\n\n"
+    for s in servers:
+        try:
+            status = await check_server_ssh(s["ip"], s["password"], s.get("port", 22))
+            if status["alive"]:
+                text += f"✅ <b>{s.get('name', 'VPS')}</b> ({s['ip']}) — ONLINE\n"
+            else:
+                text += f"❌ <b>{s.get('name', 'VPS')}</b> ({s['ip']}) — OFFLINE: {status.get('error', 'таймаут')}\n"
+        except Exception:
+            text += f"❌ <b>{s.get('name', 'VPS')}</b> ({s['ip']}) — ошибка проверки\n"
+
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+    await callback.answer()
 
