@@ -1398,15 +1398,16 @@ async def callback_admin_vps_list(callback: CallbackQuery):
     else:
         for i, s in enumerate(servers, 1):
             text += f"{i}. <b>{s.get('name', 'VPS')}</b>\n"
-            text += f"   📍 {s.get('location', '?')}\n"
-            text += f"   🌐 <code>{s['ip']}</code>\n"
-            text += f"   🔑 Пароль: <code>{s.get('password', '')[:4]}...{s.get('password', '')[-4:]}</code>\n"
-            text += f"   🔌 Порт SSH: {s.get('port', 22)}\n"
-            text += f"   🚀 /deploy_vps {s['ip']} — установить 3x-ui\n\n"
+            text += f"   📍 {s.get('location', '?')} | 🌐 {s['ip']}:{s.get('port', 22)}\n"
+            text += f"   🔑 Пароль: <code>{s.get('password', '')[:4]}...{s.get('password', '')[-4:]}</code>\n\n"
 
     from aiogram.types import InlineKeyboardButton
     from aiogram.utils.keyboard import InlineKeyboardBuilder
     builder = InlineKeyboardBuilder()
+    if servers:
+        for i, s in enumerate(servers):
+            builder.button(text=f"🚀 Установить 3x-ui: {s.get('name', s['ip'])}",
+                           callback_data=f"admin_vps_deploy_{i}")
     builder.button(text="➕ Добавить VPS", callback_data="admin_vps_add")
     builder.button(text="🔄 Проверить все", callback_data="admin_vps_check")
     builder.button(text="◀ Назад", callback_data="admin")
@@ -1414,6 +1415,50 @@ async def callback_admin_vps_list(callback: CallbackQuery):
 
     await callback.message.edit_text(text, parse_mode="HTML", reply_markup=builder.as_markup())
     await callback.answer()
+
+
+@router.callback_query(F.data.startswith("admin_vps_deploy_"))
+async def callback_admin_vps_deploy(callback: CallbackQuery):
+    if not await ensure_admin(callback):
+        return
+    await callback.answer()
+    from app.services.vps_deploy import load_vps_servers, install_3xui_on_server
+
+    idx = int(callback.data.split("_")[-1])
+    servers = load_vps_servers()
+    if idx < 0 or idx >= len(servers):
+        await callback.message.edit_text("❌ Сервер не найден.", reply_markup=admin_keyboard())
+        return
+
+    target = servers[idx]
+    ip = target["ip"]
+    await callback.message.edit_text(
+        f"🔄 Устанавливаю 3x-ui на {ip} ({target.get('name', '')})...\n"
+        f"⏳ Это может занять 2-3 минуты."
+    )
+
+    result = await install_3xui_on_server(ip, target["password"], target.get("port", 22))
+
+    if result["success"]:
+        text = (
+            f"✅ <b>3x-ui установлена на {ip}!</b>\n\n"
+            f"🌐 Панель: <code>http://{ip}:2055</code>\n"
+            f"🔐 Логин: admin | Пароль: admin\n\n"
+            f"⚠️ <b>Сразу смени пароль в панели!</b>\n\n"
+            f"Теперь импортируй сервер в бота:\n"
+            f"/admin → «Импорт с 3x-ui» → введи {ip}"
+        )
+    else:
+        text = (
+            f"❌ <b>Ошибка установки на {ip}</b>\n\n"
+            f"{result.get('error', 'Неизвестная ошибка')}\n\n"
+            f"Проверь:\n"
+            f"• IP доступен?\n"
+            f"• Пароль правильный?\n"
+            f"• Ubuntu 22.04/24.04?"
+        )
+
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
 
 
 @router.callback_query(F.data == "admin_vps_add")
