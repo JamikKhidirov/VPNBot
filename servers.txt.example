@@ -1,0 +1,10 @@
+# VPNBot — простой список серверов.
+# Формат строки:
+#   ip  ssh_password  [location]  [name]  [ssh_port]  [vpn_port]  [panel_port]
+#
+# Можно указать локацию и имя с пробелами через кавычки:
+#   1.2.3.4  rootpass  "Netherlands"  "Amsterdam NL-1"  22  443  2053
+#
+# Примеры (замени на свои):
+1.2.3.4   root_password   Netherlands   Amsterdam-NL-1   22   443   2053
+5.6.7.8   root_password   Germany       Frankfurt-DE-1   22   443   2053

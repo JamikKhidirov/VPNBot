@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv
+.venv*
+__pycache__
+*.pyc
+.pytest_cache
+.idea
+.vscode
+.env
+servers.json
+servers.txt
+vpnbot.db
+vpnbot_backup_*.db
+docs
+tests

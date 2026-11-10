@@ -6,27 +6,27 @@ services:
     container_name: vpnbot
     restart: unless-stopped
     env_file: .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
+    ports:
+      - "9090:9090"   # subscription server
+      - "8080:8080"   # webhook (если используется)
     volumes:
       - ./.env:/app/.env
       - ./vpnbot.db:/app/vpnbot.db
     networks:
       - vpnbot-network
 
+  # ── Опционально: PostgreSQL ────────────────────────────────
+  # Запуск: docker compose --profile postgres up -d
+  # В .env: DB_URL=postgresql+asyncpg://vpnbot:vpnbot@postgres:5432/vpnbot
   postgres:
     image: postgres:16-alpine
     container_name: vpnbot-db
     restart: unless-stopped
+    profiles: ["postgres"]
     environment:
       POSTGRES_USER: vpnbot
       POSTGRES_PASSWORD: vpnbot
       POSTGRES_DB: vpnbot
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -37,12 +37,12 @@ services:
     networks:
       - vpnbot-network
 
+  # ── Опционально: Redis ─────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: vpnbot-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    profiles: ["redis"]
     networks:
       - vpnbot-network
 

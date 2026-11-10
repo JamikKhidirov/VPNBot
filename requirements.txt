@@ -6,3 +6,4 @@ aioredis>=2.0.1
 aiohttp>=3.10.10
 python-dotenv>=1.0.1
 asyncssh>=2.18.0
+cryptography>=42.0.0

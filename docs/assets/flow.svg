@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img" aria-label="Архитектура VPNBot">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#05070f"/>
+      <stop offset="55%" stop-color="#0a1020"/>
+      <stop offset="100%" stop-color="#071a2b"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+      <animate attributeName="x1" values="0;1;0" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0;1" dur="10s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1730"/>
+      <stop offset="100%" stop-color="#0a1122"/>
+    </linearGradient>
+
+    <linearGradient id="server" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1a2c"/>
+      <stop offset="100%" stop-color="#0a1220"/>
+    </linearGradient>
+
+    <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" fill="none" stroke="#1e293b" stroke-width="1" opacity="0.35"/>
+    </pattern>
+
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#22d3ee" opacity="0.8"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="560" fill="url(#bg)"/>
+  <rect width="1280" height="560" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="48" y="56" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="26"
+        font-weight="700" fill="#e2e8f0">Как это работает</text>
+  <text x="48" y="82" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="14"
+        fill="#64748b">Telegram → VPNBot → 3x-ui серверы → одна подписка в V2RayTun</text>
+
+  <!-- Telegram box -->
+  <g>
+    <rect x="48" y="222" width="196" height="126" rx="20" fill="url(#panel)" stroke="#229ED9" stroke-opacity="0.55"/>
+    <circle cx="92" cy="264" r="20" fill="#229ED9" opacity="0.16"/>
+    <path d="M84 264 L100 257 L92 276 L89 267 Z" fill="#67e8f9"/>
+    <text x="122" y="270" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="18"
+          font-weight="700" fill="#e2e8f0">Telegram</text>
+    <text x="72" y="304" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13"
+          fill="#94a3b8">Пользователь</text>
+    <text x="72" y="326" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13"
+          fill="#64748b">/start · покупка · оплата</text>
+  </g>
+
+  <!-- VPNBot big box -->
+  <g>
+    <rect x="342" y="132" width="338" height="306" rx="26" fill="url(#panel)" stroke="url(#accent)" stroke-width="1.6"/>
+    <rect x="342" y="132" width="338" height="306" rx="26" fill="none" stroke="#22d3ee" stroke-opacity="0.12"/>
+
+    <text x="370" y="172" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="22"
+          font-weight="800" fill="url(#accent)">VPNBot</text>
+    <text x="370" y="194" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12"
+          fill="#64748b">Python · aiogram · SQLite / PostgreSQL</text>
+
+    <!-- sub boxes -->
+    <rect x="366" y="212" width="290" height="54" rx="13" fill="#0b1426" stroke="#22d3ee" stroke-opacity="0.28"/>
+    <text x="384" y="235" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#67e8f9">🤖 Telegram-бот</text>
+    <text x="384" y="254" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">тарифы · оплата · выдача конфигов</text>
+
+    <rect x="366" y="276" width="290" height="54" rx="13" fill="#0b1426" stroke="#818cf8" stroke-opacity="0.28"/>
+    <text x="384" y="299" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#a5b4fc">📡 Subscription server :9090</text>
+    <text x="384" y="318" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">/sub/&lt;token&gt; → base64-подписка</text>
+
+    <rect x="366" y="340" width="290" height="54" rx="13" fill="#0b1426" stroke="#f472b6" stroke-opacity="0.28"/>
+    <text x="384" y="363" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" font-weight="600" fill="#f9a8d4">🚀 Auto-deploy по SSH</text>
+    <text x="384" y="382" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">3x-ui · firewall · BBR · Reality</text>
+
+    <!-- pulsing dot -->
+    <circle cx="652" cy="150" r="5" fill="#22d3ee">
+      <animate attributeName="opacity" values="0.25;1;0.25" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Server boxes -->
+  <g>
+    <rect x="842" y="112" width="370" height="104" rx="18" fill="url(#server)" stroke="#22d3ee" stroke-opacity="0.35"/>
+    <circle cx="878" cy="150" r="7" fill="#22c55e">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="898" y="154" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#e2e8f0">Amsterdam NL-1</text>
+    <text x="870" y="182" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#94a3b8">3x-ui · VLESS Reality · :443</text>
+    <text x="870" y="202" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">🌐 Netherlands</text>
+  </g>
+
+  <g>
+    <rect x="842" y="232" width="370" height="104" rx="18" fill="url(#server)" stroke="#818cf8" stroke-opacity="0.35"/>
+    <circle cx="878" cy="270" r="7" fill="#22c55e">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="898" y="274" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#e2e8f0">Frankfurt DE-1</text>
+    <text x="870" y="302" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#94a3b8">3x-ui · VLESS Reality · :443</text>
+    <text x="870" y="322" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">🌐 Germany</text>
+  </g>
+
+  <g>
+    <rect x="842" y="352" width="370" height="104" rx="18" fill="url(#server)" stroke="#f472b6" stroke-opacity="0.35"/>
+    <circle cx="878" cy="390" r="7" fill="#22c55e">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="898" y="394" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#e2e8f0">New York US-1</text>
+    <text x="870" y="422" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#94a3b8">3x-ui · VLESS Reality · :443</text>
+    <text x="870" y="442" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">🌐 USA</text>
+  </g>
+
+  <!-- V2RayTun box -->
+  <g>
+    <rect x="48" y="406" width="196" height="110" rx="20" fill="url(#panel)" stroke="#a78bfa" stroke-opacity="0.5"/>
+    <text x="76" y="446" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="18" font-weight="700" fill="#c4b5fd">V2RayTun</text>
+    <text x="76" y="472" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#94a3b8">клиент на телефоне</text>
+    <text x="76" y="494" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">одна ссылка → все серверы</text>
+  </g>
+
+  <!-- Paths -->
+  <g fill="none" stroke-linecap="round">
+    <!-- Telegram -> bot -->
+    <path id="p1" d="M244 285 C 290 285, 300 285, 342 285" stroke="#229ED9" stroke-width="2.4" stroke-dasharray="7 9" opacity="0.85">
+      <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.1s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Bot -> server 1 -->
+    <path id="p2" d="M680 238 C 750 238, 780 164, 842 164" stroke="#22d3ee" stroke-width="2.2" stroke-dasharray="7 9" opacity="0.8">
+      <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Bot -> server 2 -->
+    <path id="p3" d="M680 285 C 750 285, 780 284, 842 284" stroke="#818cf8" stroke-width="2.2" stroke-dasharray="7 9" opacity="0.8">
+      <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.35s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Bot -> server 3 -->
+    <path id="p4" d="M680 332 C 750 332, 780 404, 842 404" stroke="#f472b6" stroke-width="2.2" stroke-dasharray="7 9" opacity="0.8">
+      <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.5s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Subscription -> V2RayTun -->
+    <path id="p5" d="M366 330 C 300 330, 280 460, 244 460" stroke="#a78bfa" stroke-width="2.2" stroke-dasharray="7 9" opacity="0.8">
+      <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.4s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Moving packets -->
+  <g>
+    <circle r="4.5" fill="#67e8f9">
+      <animateMotion dur="2.6s" repeatCount="indefinite" path="M244 285 C 290 285, 300 285, 342 285"/>
+    </circle>
+    <circle r="4" fill="#67e8f9">
+      <animateMotion dur="2.6s" begin="1.3s" repeatCount="indefinite" path="M244 285 C 290 285, 300 285, 342 285"/>
+    </circle>
+
+    <circle r="4" fill="#67e8f9">
+      <animateMotion dur="2.8s" repeatCount="indefinite" path="M680 238 C 750 238, 780 164, 842 164"/>
+    </circle>
+    <circle r="4" fill="#a5b4fc">
+      <animateMotion dur="2.8s" begin="0.9s" repeatCount="indefinite" path="M680 285 C 750 285, 780 284, 842 284"/>
+    </circle>
+    <circle r="4" fill="#f9a8d4">
+      <animateMotion dur="2.8s" begin="1.8s" repeatCount="indefinite" path="M680 332 C 750 332, 780 404, 842 404"/>
+    </circle>
+
+    <circle r="4" fill="#c4b5fd">
+      <animateMotion dur="3s" repeatCount="indefinite" path="M366 330 C 300 330, 280 460, 244 460"/>
+    </circle>
+  </g>
+
+  <!-- Path labels -->
+  <text x="264" y="268" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#38bdf8">Telegram API</text>
+  <text x="736" y="150" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#22d3ee">HTTP API</text>
+  <text x="736" y="270" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#a5b4fc">HTTP API</text>
+  <text x="736" y="390" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#f9a8d4">HTTP API</text>
+  <text x="252" y="406" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#c4b5fd">GET /sub/&lt;token&gt;</text>
+
+  <!-- Bottom note -->
+  <text x="48" y="540" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#475569">
+    deploy.py сам ставит 3x-ui, создаёт VLESS Reality inbound и добавляет сервер в базу бота.
+  </text>
+</svg>

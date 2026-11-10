@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-label="Админ-панель VPNBot: статистика и серверы">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070b14"/>
+      <stop offset="55%" stop-color="#0a1220"/>
+      <stop offset="100%" stop-color="#0a1726"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="55%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+      <animate attributeName="x1" values="0;1;0" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0;1" dur="10s" repeatCount="indefinite"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0e1728"/>
+      <stop offset="100%" stop-color="#0a1220"/>
+    </linearGradient>
+    <linearGradient id="bar1" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#0891b2"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="12"/></filter>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#1e293b" stroke-width="1" opacity="0.28"/>
+    </pattern>
+  </defs>
+
+  <rect width="960" height="560" fill="url(#bg)"/>
+  <rect width="960" height="560" fill="url(#grid)"/>
+  <circle cx="120" cy="100" r="150" fill="#22d3ee" opacity="0.08" filter="url(#soft)">
+    <animate attributeName="opacity" values="0.05;0.12;0.05" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="860" cy="470" r="140" fill="#f472b6" opacity="0.07" filter="url(#soft)"/>
+
+  <!-- window -->
+  <rect x="28" y="26" width="904" height="508" rx="20" fill="url(#card)" stroke="#1e293b"/>
+  <rect x="28" y="26" width="904" height="58" rx="20" fill="#0c1524"/>
+  <rect x="28" y="64" width="904" height="20" fill="#0c1524"/>
+
+  <!-- traffic lights -->
+  <circle cx="56" cy="55" r="6" fill="#ef4444" opacity="0.8"/>
+  <circle cx="76" cy="55" r="6" fill="#f59e0b" opacity="0.8"/>
+  <circle cx="96" cy="55" r="6" fill="#22c55e" opacity="0.8"/>
+
+  <text x="120" y="61" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#94a3b8">VPNBot · Админ-панель</text>
+
+  <g font-family="Segoe UI, Inter, Arial, sans-serif">
+    <!-- LIVE -->
+    <rect x="790" y="42" width="112" height="26" rx="13" fill="#052e1a" stroke="#22c55e" stroke-opacity="0.5"/>
+    <circle cx="808" cy="55" r="4" fill="#22c55e">
+      <animate attributeName="opacity" values="0.25;1;0.25" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="822" y="59" font-size="11" font-weight="700" fill="#86efac">LIVE</text>
+
+    <!-- Sidebar -->
+    <rect x="28" y="84" width="150" height="450" fill="#0a1120"/>
+    <line x1="178" y1="84" x2="178" y2="534" stroke="#16233a"/>
+
+    <rect x="44" y="104" width="118" height="34" rx="9" fill="#0f1e33" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="58" y="126" font-size="12" fill="#67e8f9">📊 Дашборд</text>
+
+    <text x="58" y="166" font-size="12" fill="#64748b">👥 Пользователи</text>
+    <text x="58" y="198" font-size="12" fill="#64748b">💳 Платежи</text>
+    <text x="58" y="230" font-size="12" fill="#64748b">🗂 Тарифы</text>
+    <text x="58" y="262" font-size="12" fill="#64748b">🌐 Серверы</text>
+    <text x="58" y="294" font-size="12" fill="#64748b">🔧 Настройки</text>
+
+    <rect x="44" y="330" width="118" height="1" fill="#16233a"/>
+
+    <text x="58" y="360" font-size="11" fill="#475569">СИСТЕМА</text>
+    <text x="58" y="386" font-size="12" fill="#64748b">🟢 Бот работает</text>
+    <text x="58" y="412" font-size="12" fill="#64748b">🟢 3 сервера</text>
+
+    <rect x="44" y="462" width="118" height="52" rx="10" fill="#0f1e33" stroke="#1e293b"/>
+    <text x="56" y="484" font-size="10" fill="#64748b">Версия</text>
+    <text x="56" y="502" font-size="12" font-weight="700" fill="#cbd5e1">VPNBot 2.0</text>
+
+    <!-- KPI cards -->
+    <g filter="url(#cardShadow)">
+      <rect x="198" y="104" width="168" height="98" rx="14" fill="#0d1626" stroke="#1e3a5f"/>
+      <text x="216" y="130" font-size="11" fill="#64748b">ПОЛЬЗОВАТЕЛИ</text>
+      <text x="216" y="166" font-size="30" font-weight="800" fill="#67e8f9">1 284</text>
+      <text x="216" y="188" font-size="10.5" fill="#22c55e">↑ +38 за сегодня</text>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="380" y="104" width="168" height="98" rx="14" fill="#0d1626" stroke="#27346b"/>
+      <text x="398" y="130" font-size="11" fill="#64748b">АКТИВНЫЕ</text>
+      <text x="398" y="166" font-size="30" font-weight="800" fill="#a5b4fc">874</text>
+      <text x="398" y="188" font-size="10.5" fill="#818cf8">68% от всех</text>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="562" y="104" width="168" height="98" rx="14" fill="#0d1626" stroke="#4a2f52"/>
+      <text x="580" y="130" font-size="11" fill="#64748b">ВЫРУЧКА</text>
+      <text x="580" y="166" font-size="30" font-weight="800" fill="#f9a8d4">184K ₽</text>
+      <text x="580" y="188" font-size="10.5" fill="#f472b6">за 30 дней</text>
+    </g>
+
+    <g filter="url(#cardShadow)">
+      <rect x="744" y="104" width="168" height="98" rx="14" fill="#0d1626" stroke="#1f4a3a"/>
+      <text x="762" y="130" font-size="11" fill="#64748b">ОНЛАЙН</text>
+      <text x="762" y="166" font-size="30" font-weight="800" fill="#86efac">1 902</text>
+      <text x="762" y="188" font-size="10.5" fill="#22c55e">клиентов на серверах</text>
+    </g>
+
+    <!-- Chart -->
+    <rect x="198" y="220" width="524" height="196" rx="14" fill="#0d1626" stroke="#1e293b"/>
+    <text x="218" y="248" font-size="12" font-weight="700" fill="#cbd5e1">Продажи за 7 дней</text>
+    <text x="218" y="266" font-size="10" fill="#64748b">подписки по дням</text>
+
+    <!-- baseline -->
+    <line x1="218" y1="386" x2="700" y2="386" stroke="#1e293b"/>
+
+    <!-- bars -->
+    <g>
+      <rect x="232" y="352" width="18" height="34" rx="4" fill="url(#bar1)" opacity="0.75"/>
+      <rect x="296" y="330" width="18" height="56" rx="4" fill="url(#bar1)" opacity="0.8"/>
+      <rect x="360" y="344" width="18" height="42" rx="4" fill="url(#bar1)" opacity="0.85"/>
+      <rect x="424" y="306" width="18" height="80" rx="4" fill="url(#bar2)"/>
+      <rect x="488" y="286" width="18" height="100" rx="4" fill="url(#bar2)"/>
+      <rect x="552" y="316" width="18" height="70" rx="4" fill="url(#bar1)" opacity="0.9"/>
+      <rect x="616" y="270" width="18" height="116" rx="4" fill="url(#bar2)"/>
+    </g>
+
+    <!-- animated highlight bar -->
+    <rect x="616" y="270" width="18" height="116" rx="4" fill="#a5b4fc" opacity="0.28">
+      <animate attributeName="opacity" values="0.12;0.4;0.12" dur="2.4s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- day labels -->
+    <g font-size="9" fill="#475569">
+      <text x="235" y="402">Пн</text>
+      <text x="299" y="402">Вт</text>
+      <text x="363" y="402">Ср</text>
+      <text x="427" y="402">Чт</text>
+      <text x="491" y="402">Пт</text>
+      <text x="555" y="402">Сб</text>
+      <text x="619" y="402">Вс</text>
+    </g>
+
+    <!-- trend line -->
+    <polyline points="241,352 305,330 369,344 433,306 497,286 561,316 625,270"
+              fill="none" stroke="url(#accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="625" cy="270" r="4.5" fill="#f472b6">
+      <animate attributeName="r" values="3.5;6;3.5" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Servers panel -->
+    <rect x="738" y="220" width="174" height="196" rx="14" fill="#0d1626" stroke="#1e293b"/>
+    <text x="756" y="248" font-size="12" font-weight="700" fill="#cbd5e1">Серверы</text>
+
+    <g font-size="10.5">
+      <circle cx="762" cy="276" r="4" fill="#22c55e">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="774" y="280" fill="#cbd5e1">NL-1 Amsterdam</text>
+      <text x="756" y="296" font-size="9" fill="#64748b">онлайн 642 · 34% CPU</text>
+
+      <circle cx="762" cy="322" r="4" fill="#22c55e">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="774" y="326" fill="#cbd5e1">DE-1 Frankfurt</text>
+      <text x="756" y="342" font-size="9" fill="#64748b">онлайн 580 · 41% CPU</text>
+
+      <circle cx="762" cy="368" r="4" fill="#22c55e">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text x="774" y="372" fill="#cbd5e1">US-1 New York</text>
+      <text x="756" y="388" font-size="9" fill="#64748b">онлайн 680 · 52% CPU</text>
+    </g>
+
+    <!-- Bottom activity -->
+    <rect x="198" y="432" width="714" height="86" rx="14" fill="#0d1626" stroke="#1e293b"/>
+    <text x="218" y="458" font-size="12" font-weight="700" fill="#cbd5e1">Последние операции</text>
+
+    <g font-size="10.5">
+      <circle cx="224" cy="482" r="3" fill="#22c55e"/>
+      <text x="236" y="486" fill="#94a3b8">Оплата 189 ₽ · @ivan_petrov · тариф «3 месяца»</text>
+      <text x="680" y="486" fill="#475569">1 мин назад</text>
+
+      <circle cx="224" cy="504" r="3" fill="#22d3ee"/>
+      <text x="236" y="508" fill="#94a3b8">Новый пользователь @anna_v · пробный период</text>
+      <text x="680" y="508" fill="#475569">3 мин назад</text>
+    </g>
+
+    <!-- deploy badge -->
+    <rect x="600" y="54" width="174" height="26" rx="13" fill="#0b1a2a" stroke="#38bdf8" stroke-opacity="0.45"/>
+    <text x="687" y="71" text-anchor="middle" font-size="10.5" fill="#7dd3fc">🚀 deploy.py — 3/3 сервера</text>
+  </g>
+</svg>

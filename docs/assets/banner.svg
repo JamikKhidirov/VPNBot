@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-label="VPNBot — Telegram VPN Store">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#05070f"/>
+      <stop offset="45%" stop-color="#0b1226"/>
+      <stop offset="100%" stop-color="#071a2b"/>
+      <animate attributeName="x1" values="0;0.35;0" dur="16s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0.65;1" dur="16s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="48%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+      <animate attributeName="x1" values="0;1;0" dur="9s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0;1" dur="9s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0"/>
+      <stop offset="35%" stop-color="#22d3ee"/>
+      <stop offset="65%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+      <animate attributeName="x1" values="-0.4;1;-0.4" dur="7s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0.6;2;0.6" dur="7s" repeatCount="indefinite"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.65"/>
+      <stop offset="55%" stop-color="#6366f1" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="pinkGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="softBlur"><feGaussianBlur stdDeviation="6"/></filter>
+
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1e293b" stroke-width="1" opacity="0.42"/>
+    </pattern>
+
+    <clipPath id="frame">
+      <rect width="1280" height="360" rx="0"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1280" height="360" fill="url(#bg)"/>
+  <rect width="1280" height="360" fill="url(#grid)" clip-path="url(#frame)"/>
+
+  <!-- Decorative glows -->
+  <circle cx="190" cy="175" r="170" fill="url(#glow)" filter="url(#blur)">
+    <animate attributeName="r" values="150;190;150" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1080" cy="70" r="130" fill="url(#pinkGlow)" filter="url(#blur)">
+    <animate attributeName="r" values="110;150;110" dur="7s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Floating particles -->
+  <g fill="#22d3ee">
+    <circle cx="760" cy="70" r="2.5" opacity="0.8">
+      <animate attributeName="cy" values="70;58;70" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.25;0.9;0.25" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="930" cy="285" r="2" opacity="0.6">
+      <animate attributeName="cy" values="285;272;285" dur="5.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.75;0.2" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1130" cy="235" r="2.5" opacity="0.7">
+      <animate attributeName="cy" values="235;222;235" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.15;0.7;0.15" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="660" cy="315" r="1.8" opacity="0.5">
+      <animate attributeName="cy" values="315;305;315" dur="4.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Logo -->
+  <g transform="translate(185 180)">
+    <circle r="120" fill="url(#glow)" filter="url(#blur)">
+      <animate attributeName="opacity" values="0.55;1;0.55" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- rotating orbit -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+      <circle cx="0" cy="-112" r="4.5" fill="#22d3ee"/>
+      <circle cx="97" cy="56" r="3.5" fill="#818cf8"/>
+      <circle cx="-97" cy="56" r="3" fill="#f472b6"/>
+      <circle r="108" fill="none" stroke="#22d3ee" stroke-opacity="0.18" stroke-width="1"/>
+    </g>
+
+    <!-- shield -->
+    <path d="M0 -72 L58 -44 V12 C58 50 31 74 0 86 C-31 74 -58 50 -58 12 V-44 Z"
+          fill="#08111f" stroke="url(#accent)" stroke-width="3.5"/>
+    <path d="M0 -58 L44 -36 V10 C44 40 23 58 0 68 C-23 58 -44 40 -44 10 V-36 Z"
+          fill="#0b1729" stroke="#22d3ee" stroke-opacity="0.25" stroke-width="1.5"/>
+
+    <!-- lock -->
+    <rect x="-17" y="4" width="34" height="27" rx="6" fill="url(#accent)"/>
+    <path d="M-10 4 V-5 C-10 -19 10 -19 10 -5 V4" fill="none" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="0" cy="15" r="4" fill="#08111f"/>
+    <rect x="-1.5" y="15" width="3" height="8" rx="1.5" fill="#08111f"/>
+
+    <!-- pulse ring -->
+    <circle r="58" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.45">
+      <animate attributeName="r" values="52;84;52" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0;0.5" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Text -->
+  <text x="334" y="146" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="92"
+        font-weight="800" letter-spacing="-2" fill="url(#accent)">VPNBot</text>
+
+  <text x="337" y="196" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="33"
+        font-weight="600" fill="#e2e8f0">Telegram VPN Store</text>
+
+  <text x="339" y="240" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="18"
+        fill="#94a3b8">Продавай подписки. Один файл с серверами. Одна команда.</text>
+
+  <!-- Pills -->
+  <g font-family="Segoe UI, Inter, Arial, sans-serif" font-size="14" font-weight="600">
+    <rect x="337" y="270" width="150" height="34" rx="17" fill="#0f172a" stroke="#22d3ee" stroke-opacity="0.55"/>
+    <text x="412" y="292" text-anchor="middle" fill="#67e8f9">VLESS Reality</text>
+
+    <rect x="499" y="270" width="92" height="34" rx="17" fill="#0f172a" stroke="#818cf8" stroke-opacity="0.55"/>
+    <text x="545" y="292" text-anchor="middle" fill="#a5b4fc">3x-ui</text>
+
+    <rect x="603" y="270" width="154" height="34" rx="17" fill="#0f172a" stroke="#f472b6" stroke-opacity="0.55"/>
+    <text x="680" y="292" text-anchor="middle" fill="#f9a8d4">Auto Deploy</text>
+  </g>
+
+  <!-- Bottom animated line -->
+  <rect x="0" y="346" width="1280" height="3" fill="url(#line)"/>
+  <rect x="0" y="352" width="1280" height="8" fill="url(#bg)" opacity="0.9"/>
+</svg>

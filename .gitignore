@@ -1,12 +1,24 @@
 .env
+.env.*
+!.env.example
+
+# Секреты и локальные данные
 servers.json
+servers.txt
 vpnbot.db
 vpnbot_backup_*.db
+data/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+.venv*/
 .pytest_cache/
 .idea/
+.vscode/
 *.egg-info/
 dist/
 build/
+*.log

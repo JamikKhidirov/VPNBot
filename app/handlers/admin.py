@@ -452,12 +452,17 @@ async def admin_give_duration(message: Message, state: FSMContext):
 
     servers = await get_all_servers()
     active_servers = [s for s in servers if s.is_active]
-    config_result = None
-    if active_servers:
-        config_result = await v2ray_service.create_user_config(
-            user_id=target.id, server_id=active_servers[0].id,
-            subscription_id=sub.id, duration_days=days,
-        )
+    configs = []
+    for srv in active_servers:
+        try:
+            cfg = await v2ray_service.create_user_config(
+                user_id=target.id, server_id=srv.id,
+                subscription_id=sub.id, duration_days=days,
+                server_host=srv.host, server_port=srv.port,
+            )
+            configs.append(cfg)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("GIVE_CONFIG_FAILED server=%s: %s", srv.host, exc)
 
     await state.clear()
     text = (
@@ -466,9 +471,10 @@ async def admin_give_duration(message: Message, state: FSMContext):
         f"🗓 Тариф: {data['plan_code']}\n"
         f"📅 Дней: {days}\n"
         f"📆 До: {end_date.strftime('%d.%m.%Y')}\n"
+        f"🌐 Серверов: {len(configs)}/{len(active_servers)}\n"
     )
-    if config_result:
-        text += f"\n🔗 Ссылка: <code>{config_result['link']}</code>"
+    if configs:
+        text += f"\n🔗 Первая ссылка: <code>{configs[0]['link']}</code>"
 
     await message.answer(text, parse_mode="HTML", reply_markup=admin_keyboard())
 
@@ -1074,6 +1080,9 @@ async def cmd_admin_help(message: Message):
         "  /server_toggle [id] — вкл/выкл\n"
         "  /server_del [id] — удалить\n"
         "  /check_server [id] — проверить 3x-ui на сервере\n"
+        "  /deploy_vps [ip] — установить 3x-ui на VPS\n"
+        "  /deploy_all — развернуть все серверы из servers.json\n"
+        "  /sync_servers — импортировать серверы из 3x-ui в БД\n"
         "  /import_inbounds — импорт всех inbounds с 3x-ui\n\n"
         "📢 <b>Прочее:</b>\n"
         "  /configs — все активные конфиги\n"
@@ -1387,19 +1396,21 @@ async def callback_admin_server_load(callback: CallbackQuery):
 async def callback_admin_vps_list(callback: CallbackQuery):
     if not await ensure_admin(callback):
         return
-    from app.services.vps_deploy import load_vps_servers
+    from app.services.vps_deploy import load_servers_config
 
-    servers = load_vps_servers()
+    panel, servers = load_servers_config()
     text = "🌐 <b>Мои VPS сервера:</b>\n\n"
     if not servers:
         text += "Нет добавленных серверов.\n\n"
-        text += "Нажми «➕ Добавить VPS» чтобы добавить. "
-        text += "Порт SSH по умолчанию: 22."
+        text += "Заполни <code>servers.json</code> или <code>servers.txt</code> "
+        text += "и запусти <code>python deploy.py</code>."
     else:
         for i, s in enumerate(servers, 1):
-            text += f"{i}. <b>{s.get('name', 'VPS')}</b>\n"
-            text += f"   📍 {s.get('location', '?')} | 🌐 {s['ip']}:{s.get('port', 22)}\n"
-            text += f"   🔑 Пароль: <code>{s.get('password', '')[:4]}...{s.get('password', '')[-4:]}</code>\n\n"
+            status = "✅" if s.get("deployed") else "⚪"
+            text += f"{i}. {status} <b>{s.get('name', 'VPS')}</b>\n"
+            text += f"   📍 {s.get('location', '?')} | 🌐 {s['ip']}:{s.get('vpn_port', 443)}\n"
+            text += f"   🖥 Панель: :{s.get('panel_port', panel.get('port', 2053))} | SSH: {s.get('ssh_port', 22)}\n"
+            text += f"   🔑 Root: <code>{str(s.get('password', ''))[:4]}...{str(s.get('password', ''))[-4:]}</code>\n\n"
 
     from aiogram.types import InlineKeyboardButton
     from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -1410,6 +1421,7 @@ async def callback_admin_vps_list(callback: CallbackQuery):
                            callback_data=f"admin_vps_deploy_{i}")
     builder.button(text="➕ Добавить VPS", callback_data="admin_vps_add")
     builder.button(text="🔄 Проверить все", callback_data="admin_vps_check")
+    builder.button(text="📥 Синхронизировать с БД", callback_data="admin_vps_sync")
     builder.button(text="◀ Назад", callback_data="admin")
     builder.adjust(1)
 
@@ -1417,45 +1429,103 @@ async def callback_admin_vps_list(callback: CallbackQuery):
     await callback.answer()
 
 
+@router.callback_query(F.data == "admin_vps_sync")
+async def callback_admin_vps_sync(callback: CallbackQuery):
+    if not await ensure_admin(callback):
+        return
+    from app.services.vps_deploy import load_servers_config, sync_all_to_db
+
+    await callback.answer()
+    panel, servers = load_servers_config()
+    if not servers:
+        await callback.message.edit_text("❌ Нет серверов в servers.json.", reply_markup=admin_keyboard())
+        return
+
+    await callback.message.edit_text("🔄 Импортирую серверы из 3x-ui в БД...")
+    summary = await sync_all_to_db(servers, panel)
+    text = (
+        f"📊 <b>Синхронизация завершена</b>\n\n"
+        f"✅ Импортировано: <b>{summary['success']}</b>\n"
+        f"❌ Ошибок: <b>{summary['failed']}</b>\n"
+    )
+    for item in summary["results"]:
+        if item.get("success"):
+            text += f"✅ {item['server']} → #{item.get('id')}\n"
+        else:
+            text += f"❌ {item['server']}: {str(item.get('error', ''))[:120]}\n"
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
 @router.callback_query(F.data.startswith("admin_vps_deploy_"))
 async def callback_admin_vps_deploy(callback: CallbackQuery):
     if not await ensure_admin(callback):
         return
     await callback.answer()
-    from app.services.vps_deploy import load_vps_servers, install_3xui_on_server
+    from app.services.vps_deploy import (
+        deploy_server, import_server_to_db, load_servers_config,
+        save_servers_config, is_placeholder_server,
+    )
 
     idx = int(callback.data.split("_")[-1])
-    servers = load_vps_servers()
+    panel, servers = load_servers_config()
     if idx < 0 or idx >= len(servers):
         await callback.message.edit_text("❌ Сервер не найден.", reply_markup=admin_keyboard())
         return
 
     target = servers[idx]
+    if is_placeholder_server(target):
+        await callback.message.edit_text(
+            "❌ В `servers.json` указан placeholder.\n"
+            "Впиши реальный IP и root-пароль и попробуй снова.",
+            reply_markup=admin_keyboard(),
+        )
+        return
+
     ip = target["ip"]
     await callback.message.edit_text(
         f"🔄 Устанавливаю 3x-ui на {ip} ({target.get('name', '')})...\n"
-        f"⏳ Это может занять 2-3 минуты."
+        f"⏳ Это может занять 2-5 минут.\n\n"
+        f"SSH → firewall → BBR → 3x-ui → VLESS Reality"
     )
 
-    result = await install_3xui_on_server(ip, target["password"], target.get("port", 22))
+    result = await deploy_server(target, panel)
 
     if result["success"]:
+        details = result["inbound"]
+        target.update({
+            "deployed": True,
+            "inbound_id": details.get("inbound_id"),
+            "public_key": details.get("public_key"),
+            "short_id": details.get("short_id"),
+            "sni": details.get("sni"),
+            "panel_port": panel.get("port", 2053),
+            "panel_user": panel.get("username"),
+            "panel_pass": panel.get("password"),
+        })
+        save_servers_config(panel, servers)
+        server_id = await import_server_to_db(target, details, panel)
         text = (
-            f"✅ <b>3x-ui установлена на {ip}!</b>\n\n"
-            f"🌐 Панель: <code>http://{ip}:2055</code>\n"
-            f"🔐 Логин: admin | Пароль: admin\n\n"
-            f"⚠️ <b>Сразу смени пароль в панели!</b>\n\n"
-            f"Теперь импортируй сервер в бота:\n"
-            f"/admin → «Импорт с 3x-ui» → введи {ip}"
+            f"✅ <b>Сервер готов!</b>\n\n"
+            f"🌐 IP: <code>{ip}</code>\n"
+            f"📍 Локация: {target.get('location') or '—'}\n"
+            f"🔌 VPN-порт: <b>{details.get('port')}</b>\n"
+            f"🛡 Протокол: <b>{details.get('protocol', 'vless').upper()} Reality</b>\n"
+            f"🔑 Сервер в БД: <b>#{server_id}</b>\n\n"
+            f"🖥 Панель: <code>{result.get('panel_url')}</code>\n"
+            f"👤 Логин: <code>{result.get('panel_user')}</code>\n"
+            f"🔐 Пароль: <code>{result.get('panel_pass')}</code>\n\n"
+            f"⚠️ Пароль панели сохранён в <code>.env</code> (V2RAY_PASS).\n"
+            f"Теперь можно продавать подписки."
         )
     else:
         text = (
             f"❌ <b>Ошибка установки на {ip}</b>\n\n"
-            f"{result.get('error', 'Неизвестная ошибка')}\n\n"
+            f"<code>{result.get('error', 'Неизвестная ошибка')[:1500]}</code>\n\n"
             f"Проверь:\n"
             f"• IP доступен?\n"
-            f"• Пароль правильный?\n"
-            f"• Ubuntu 22.04/24.04?"
+            f"• Root-пароль правильный?\n"
+            f"• Ubuntu 22.04/24.04?\n"
+            f"• SSH-порт: {target.get('ssh_port', 22)}?"
         )
 
     await callback.message.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
@@ -1498,27 +1568,34 @@ async def admin_vps_add_location(message: Message, state: FSMContext):
 
 @router.message(AdminStates.vps_add_name)
 async def admin_vps_add_name(message: Message, state: FSMContext):
-    from app.services.vps_deploy import load_vps_servers, save_vps_servers
+    from app.services.vps_deploy import ensure_panel_credentials, load_servers_config, save_servers_config
 
     data = await state.get_data()
-    servers = load_vps_servers()
+    panel, servers = load_servers_config()
+    panel = ensure_panel_credentials(panel, servers)
     servers.append({
         "ip": data["ip"],
         "password": data["password"],
         "location": data["location"],
         "name": message.text.strip(),
-        "port": 22,
+        "ssh_port": 22,
+        "vpn_port": 443,
+        "panel_port": panel.get("port", 2053),
+        "panel_user": panel.get("username", "admin"),
+        "panel_pass": panel.get("password", ""),
+        "deployed": False,
     })
-    save_vps_servers(servers)
+    save_servers_config(panel, servers)
     await state.clear()
     await message.answer(
         f"✅ <b>VPS сервер добавлен!</b>\n\n"
         f"🌐 IP: <code>{data['ip']}</code>\n"
         f"📍 Локация: {data['location']}\n"
         f"📛 Название: {message.text.strip()}\n"
-        f"🔌 Порт SSH: 22\n\n"
-        f"Теперь можешь установить 3x-ui:\n"
-        f"/deploy_vps {data['ip']}",
+        f"🔌 SSH-порт: 22 | VPN-порт: 443\n\n"
+        f"Теперь установи 3x-ui:\n"
+        f"/deploy_vps {data['ip']}\n"
+        f"или запусти <code>python deploy.py</code>",
         parse_mode="HTML",
         reply_markup=admin_keyboard(),
     )
@@ -1533,40 +1610,131 @@ async def cmd_deploy_vps(message: Message):
         await message.answer("Использование: /deploy_vps [IP]")
         return
 
-    from app.services.vps_deploy import load_vps_servers, install_3xui_on_server
+    from app.services.vps_deploy import (
+        deploy_server, import_server_to_db, load_servers_config,
+        save_servers_config, is_placeholder_server,
+    )
 
     ip = args[1].strip()
-    servers = load_vps_servers()
+    panel, servers = load_servers_config()
     target = next((s for s in servers if s["ip"] == ip), None)
     if not target:
-        await message.answer(f"❌ VPS с IP {ip} не найден в servers.json.\n"
-                             f"Сначала добавь через админку: /admin → «VPS сервера» → «Добавить VPS»")
+        await message.answer(
+            f"❌ VPS с IP {ip} не найден в servers.json.\n"
+            f"Добавь сервер в файл и запусти <code>python deploy.py</code>, "
+            f"или используй /admin → «VPS сервера» → «Добавить VPS».",
+            parse_mode="HTML",
+        )
+        return
+    if is_placeholder_server(target):
+        await message.answer("❌ В servers.json указан placeholder. Впиши реальные IP и пароль.")
         return
 
-    msg = await message.answer(f"🔄 Устанавливаю 3x-ui на {ip}...\n⏳ Это может занять 2-3 минуты.")
+    msg = await message.answer(
+        f"🔄 Устанавливаю 3x-ui на {ip}...\n"
+        f"⏳ SSH → firewall → BBR → 3x-ui → VLESS Reality. Это займёт 2-5 минут."
+    )
 
-    result = await install_3xui_on_server(ip, target["password"], target.get("port", 22))
+    result = await deploy_server(target, panel)
 
     if result["success"]:
+        details = result["inbound"]
+        target.update({
+            "deployed": True,
+            "inbound_id": details.get("inbound_id"),
+            "public_key": details.get("public_key"),
+            "short_id": details.get("short_id"),
+            "sni": details.get("sni"),
+            "panel_port": panel.get("port", 2053),
+            "panel_user": panel.get("username"),
+            "panel_pass": panel.get("password"),
+        })
+        save_servers_config(panel, servers)
+        server_id = await import_server_to_db(target, details, panel)
         text = (
-            f"✅ <b>3x-ui установлена на {ip}!</b>\n\n"
-            f"🌐 Панель: <code>http://{ip}:2055</code>\n"
-            f"🔐 Логин: admin | Пароль: admin\n\n"
-            f"⚠️ <b>Сразу смени пароль в панели!</b>\n\n"
-            f"Теперь импортируй сервер в бота:\n"
-            f"/admin → «Импорт с 3x-ui» → введи {ip}"
+            f"✅ <b>Сервер готов!</b>\n\n"
+            f"🌐 IP: <code>{ip}</code>\n"
+            f"🔌 VPN-порт: <b>{details.get('port')}</b>\n"
+            f"🛡 Протокол: <b>{details.get('protocol', 'vless').upper()} Reality</b>\n"
+            f"🔑 Сервер в БД: <b>#{server_id}</b>\n\n"
+            f"🖥 Панель: <code>{result.get('panel_url')}</code>\n"
+            f"👤 Логин: <code>{result.get('panel_user')}</code>\n"
+            f"🔐 Пароль: <code>{result.get('panel_pass')}</code>\n\n"
+            f"Пароль панели сохранён в <code>.env</code>."
         )
     else:
         text = (
             f"❌ <b>Ошибка установки на {ip}</b>\n\n"
-            f"{result.get('error', 'Неизвестная ошибка')}\n\n"
-            f"Проверь:\n"
-            f"• IP доступен?\n"
-            f"• Пароль правильный?\n"
-            f"• Ubuntu 22.04/24.04?\n"
-            f"• Порт SSH: 22?"
+            f"<code>{result.get('error', 'Неизвестная ошибка')[:1500]}</code>\n\n"
+            f"Проверь IP, root-пароль, SSH-порт и версию Ubuntu."
         )
 
+    await msg.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
+@router.message(Command("deploy_all"))
+async def cmd_deploy_all(message: Message):
+    if not await ensure_admin(message):
+        return
+    from app.services.vps_deploy import deploy_all, load_servers_config, is_placeholder_server
+
+    panel, servers = load_servers_config()
+    real = [s for s in servers if not is_placeholder_server(s)]
+    if not real:
+        await message.answer(
+            "❌ Нет реальных серверов.\n"
+            "Заполни <code>servers.json</code> или <code>servers.txt</code> "
+            "и запусти <code>python deploy.py</code>.",
+            parse_mode="HTML",
+        )
+        return
+
+    msg = await message.answer(
+        f"🚀 Разворачиваю <b>{len(real)}</b> сервер(ов) из servers.json...\n"
+        f"Это может занять несколько минут. Дождись финального сообщения.",
+        parse_mode="HTML",
+    )
+    summary = await deploy_all(servers, panel)
+
+    text = (
+        f"📊 <b>Развёртывание завершено</b>\n\n"
+        f"✅ Успешно: <b>{summary['success']}</b>\n"
+        f"❌ Ошибок: <b>{summary['failed']}</b>\n"
+        f"⏭ Пропущено: <b>{summary['skipped']}</b>\n\n"
+    )
+    for item in summary["imported"]:
+        text += f"✅ {item['server']} → server #{item['id']}\n"
+    for result in summary["results"]:
+        if not result.get("success"):
+            name = (result.get("server") or {}).get("name") or (result.get("server") or {}).get("ip")
+            text += f"❌ {name}: {str(result.get('error', ''))[:200]}\n"
+
+    await msg.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
+
+
+@router.message(Command("sync_servers"))
+async def cmd_sync_servers(message: Message):
+    if not await ensure_admin(message):
+        return
+    from app.services.vps_deploy import sync_all_to_db, load_servers_config
+
+    panel, servers = load_servers_config()
+    if not servers:
+        await message.answer("❌ Нет серверов в servers.json.")
+        return
+
+    msg = await message.answer("🔄 Импортирую серверы из 3x-ui в БД...")
+    summary = await sync_all_to_db(servers, panel)
+    text = (
+        f"📊 <b>Синхронизация завершена</b>\n\n"
+        f"✅ Импортировано: <b>{summary['success']}</b>\n"
+        f"❌ Ошибок: <b>{summary['failed']}</b>\n"
+    )
+    for item in summary["results"]:
+        if item.get("success"):
+            text += f"✅ {item['server']} → #{item.get('id')}\n"
+        else:
+            text += f"❌ {item['server']}: {str(item.get('error', ''))[:150]}\n"
     await msg.edit_text(text, parse_mode="HTML", reply_markup=admin_keyboard())
 
 
@@ -1586,7 +1754,7 @@ async def callback_admin_vps_check(callback: CallbackQuery):
     text = "🔍 <b>Статус VPS серверов:</b>\n\n"
     for s in servers:
         try:
-            status = await check_server_ssh(s["ip"], s["password"], s.get("port", 22))
+            status = await check_server_ssh(s["ip"], s["password"], s.get("ssh_port") or s.get("port", 22))
             if status["alive"]:
                 text += f"✅ <b>{s.get('name', 'VPS')}</b> ({s['ip']}) — ONLINE\n"
             else:

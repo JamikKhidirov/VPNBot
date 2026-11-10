@@ -242,11 +242,12 @@ async def get_server(server_id: int) -> Server | None:
 
 async def create_server(name: str, host: str, port: int, protocol: str = "vless",
                         location: str | None = None, traffic_limit: float = 0,
-                        is_active: bool = True) -> Server:
+                        is_active: bool = True,
+                        config_template: str | None = None) -> Server:
     async with async_session() as session:
         server = Server(name=name, host=host, port=port, protocol=protocol,
                         location=location, traffic_limit=traffic_limit,
-                        is_active=is_active)
+                        is_active=is_active, config_template=config_template)
         session.add(server)
         await session.commit()
         await session.refresh(server)

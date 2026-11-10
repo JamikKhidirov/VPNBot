@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="760" viewBox="0 0 420 760" role="img" aria-label="Telegram-бот VPNBot: покупка подписки">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="100%" stop-color="#111b2e"/>
+    </linearGradient>
+    <linearGradient id="phone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0e1726"/>
+      <stop offset="100%" stop-color="#0a111c"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="55%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+      <animate attributeName="x1" values="0;1;0" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0;1" dur="8s" repeatCount="indefinite"/>
+    </linearGradient>
+    <linearGradient id="out" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="in" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#16233a"/>
+      <stop offset="100%" stop-color="#1b2b45"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="soft">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <clipPath id="screen">
+      <rect x="34" y="52" width="352" height="656" rx="34"/>
+    </clipPath>
+  </defs>
+
+  <rect width="420" height="760" fill="url(#bg)"/>
+
+  <!-- glow -->
+  <circle cx="210" cy="330" r="190" fill="#22d3ee" opacity="0.10" filter="url(#soft)">
+    <animate attributeName="opacity" values="0.06;0.14;0.06" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="350" cy="660" r="120" fill="#f472b6" opacity="0.08" filter="url(#soft)"/>
+
+  <!-- phone frame -->
+  <g filter="url(#shadow)">
+    <rect x="22" y="30" width="376" height="700" rx="46" fill="#050a13" stroke="url(#accent)" stroke-width="2"/>
+    <rect x="34" y="52" width="352" height="656" rx="34" fill="url(#phone)"/>
+  </g>
+
+  <g clip-path="url(#screen)">
+    <!-- status bar -->
+    <text x="56" y="80" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" fill="#94a3b8">9:41</text>
+    <g fill="#94a3b8">
+      <rect x="322" y="72" width="16" height="8" rx="2" opacity="0.7"/>
+      <rect x="342" y="72" width="3" height="8" rx="1" opacity="0.5"/>
+      <circle cx="356" cy="76" r="4" opacity="0.6"/>
+    </g>
+
+    <!-- chat header -->
+    <rect x="34" y="92" width="352" height="54" fill="#101b2e"/>
+    <circle cx="68" cy="119" r="17" fill="url(#out)"/>
+    <path d="M60 119 L76 112 L68 130 L65 121 Z" fill="#bfdbfe"/>
+    <text x="94" y="116" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#e2e8f0">VPNBot</text>
+    <text x="94" y="134" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#22d3ee">bot · онлайн</text>
+    <circle cx="364" cy="119" r="3" fill="#22c55e">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <line x1="34" y1="146" x2="386" y2="146" stroke="#1e293b"/>
+
+    <!-- messages -->
+
+    <!-- incoming: greeting -->
+    <g>
+      <rect x="50" y="172" width="262" height="74" rx="16" fill="url(#in)" stroke="#22314d"/>
+      <text x="66" y="197" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12.5" fill="#e2e8f0">👋 Привет! Это VPN-бот.</text>
+      <text x="66" y="218" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12.5" fill="#cbd5e1">Быстрый VPN без рекламы.</text>
+      <text x="66" y="237" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#64748b">Безлимит · 5 серверов · 24/7</text>
+      <animate attributeName="opacity" values="0;1;1;1;0;0" keyTimes="0;0.06;0.42;0.94;0.98;1" dur="14s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- outgoing: buy -->
+    <g>
+      <rect x="176" y="264" width="196" height="42" rx="16" fill="url(#out)"/>
+      <text x="192" y="290" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" fill="#eff6ff">/buy</text>
+      <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.14;0.20;0.94;0.98;1" dur="14s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- incoming: plans -->
+    <g>
+      <rect x="50" y="320" width="300" height="132" rx="16" fill="url(#in)" stroke="#22314d"/>
+      <text x="66" y="346" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#e2e8f0">🛒 Выбери тариф</text>
+      <rect x="64" y="358" width="272" height="26" rx="8" fill="#0d1a2b" stroke="#1e3a5f"/>
+      <text x="76" y="376" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11.5" fill="#93c5fd">🌙 1 месяц — 70 ₽</text>
+      <rect x="64" y="390" width="272" height="26" rx="8" fill="#0d1a2b" stroke="#22d3ee" stroke-opacity="0.55"/>
+      <text x="76" y="408" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11.5" fill="#67e8f9">🔥 3 месяца — 189 ₽ (-10%)</text>
+      <rect x="64" y="422" width="272" height="22" rx="8" fill="#0d1a2b" stroke="#1e3a5f"/>
+      <text x="76" y="438" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11.5" fill="#93c5fd">🚀 1 год — 588 ₽ (-30%)</text>
+      <animate attributeName="opacity" values="0;0;0;1;1;0;0" keyTimes="0;0.20;0.24;0.30;0.94;0.98;1" dur="14s" repeatCount="indefinite"/>
+      <animate attributeName="transform" type="translate" values="0 10;0 10;0 0;0 0;0 0" keyTimes="0;0.24;0.30;0.94;1" dur="14s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- outgoing: select -->
+    <g>
+      <rect x="212" y="470" width="160" height="42" rx="16" fill="url(#out)"/>
+      <text x="228" y="496" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" fill="#eff6ff">3 месяца</text>
+      <animate attributeName="opacity" values="0;0;0;0;1;1;0;0" keyTimes="0;0.30;0.36;0.40;0.46;0.94;0.98;1" dur="14s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- incoming: payment success -->
+    <g>
+      <rect x="50" y="526" width="286" height="96" rx="16" fill="url(#in)" stroke="#22c55e" stroke-opacity="0.45"/>
+      <circle cx="72" cy="550" r="11" fill="#22c55e" opacity="0.18"/>
+      <path d="M66 550 L70 555 L79 545" fill="none" stroke="#22c55e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="90" y="555" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#86efac">Оплата получена</text>
+      <text x="66" y="578" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11.5" fill="#cbd5e1">Подписка активирована на 90 дней</text>
+      <text x="66" y="600" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#22d3ee">🔗 Ссылка для V2RayTun готова</text>
+      <animate attributeName="opacity" values="0;0;0;0;0;1;1;0;0" keyTimes="0;0.40;0.46;0.52;0.58;0.64;0.94;0.98;1" dur="14s" repeatCount="indefinite"/>
+      <animate attributeName="transform" type="scale" values="0.9;0.9;1;1;1" keyTimes="0;0.58;0.64;0.94;1" dur="14s" repeatCount="indefinite" additive="sum"/>
+    </g>
+
+    <!-- incoming: subscription link -->
+    <g>
+      <rect x="50" y="636" width="286" height="58" rx="14" fill="#0b1a2a" stroke="#38bdf8" stroke-opacity="0.4"/>
+      <text x="66" y="658" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="11" fill="#7dd3fc">🔗 vpnbot.example/sub/a1b2c3</text>
+      <text x="66" y="678" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="10.5" fill="#64748b">Нажми, чтобы скопировать</text>
+      <circle cx="318" cy="665" r="10" fill="#38bdf8" opacity="0.15">
+        <animate attributeName="r" values="8;13;8" dur="2.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.2;0.02;0.2" dur="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <animate attributeName="opacity" values="0;0;0;0;0;0;1;1;0" keyTimes="0;0.46;0.52;0.58;0.64;0.70;0.76;0.94;1" dur="14s" repeatCount="indefinite"/>
+    </g>
+  </g>
+
+  <!-- bottom bar -->
+  <rect x="150" y="716" width="120" height="5" rx="2.5" fill="#334155"/>
+
+  <!-- floating badges -->
+  <g font-family="Segoe UI, Inter, Arial, sans-serif">
+    <rect x="286" y="150" width="112" height="30" rx="15" fill="#0f172a" stroke="#22c55e" stroke-opacity="0.6"/>
+    <text x="342" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="#86efac">24/7 ONLINE</text>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+
+    <rect x="18" y="600" width="120" height="30" rx="15" fill="#0f172a" stroke="#f472b6" stroke-opacity="0.6"/>
+    <text x="78" y="620" text-anchor="middle" font-size="11" font-weight="700" fill="#f9a8d4">1 CLICK VPN</text>
+  </g>
+</svg>
